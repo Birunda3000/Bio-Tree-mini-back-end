@@ -1,9 +1,19 @@
-from config import app, db
+import os.path
 
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-@app.route("/test")
-def test():
-    return "Hello World test!"
+from models import *
+from controllers import *
+
+app = Flask(__name__)
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+    basedir, "storage.db"
+)
+db = SQLAlchemy(app)
 
 if __name__ == "__main__":
     with app.app_context():
