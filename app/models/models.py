@@ -47,14 +47,6 @@ TAXON_TYPES = [
     "subspecies",
 ]
 
-ancestors = db.Table(
-    "ancestors",
-    db.Column("ancestor_id", db.Integer, db.ForeignKey("taxons.id"), primary_key=True),
-    db.Column(
-        "descendant_id", db.Integer, db.ForeignKey("taxons.id"), primary_key=True
-    ),
-)
-
 
 class Taxon(db.Model):
     __tablename__ = "taxons"
@@ -68,13 +60,6 @@ class Taxon(db.Model):
     individuals_number = db.Column(db.Integer, unique=False, nullable=True)
     tags = db.relationship(
         "Tag", secondary=taxon_tag, backref=db.backref("taxons", lazy="dynamic")
-    )
-    ancestors = db.relationship(
-        "Taxon",
-        secondary=ancestors,
-        primaryjoin=id == ancestors.c.descendant_id,
-        secondaryjoin=id == ancestors.c.ancestor_id,
-        backref="descendants",
     )
 
     # Relationships
