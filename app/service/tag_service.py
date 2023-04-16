@@ -1,5 +1,3 @@
-from ..app import db
 
-from ..app import rio
-
-rio()
+def teste_service():
+    return print("Teste de service")

@@ -1,10 +1,22 @@
-from app import app
-from ..service import *
+from app.service.tag_service import * # 
+#from ..service.tag_service import * #ImportError: attempted relative import beyond top-level package
+from flask_restx import Resource, Namespace, fields
 
-@app.route("/")
-def home():
-    return "Hello World test!"
+tag_ns = Namespace("tag", description="Tag operations")
 
-@app.route("/test")
-def index():
-    return "Hello World!"
+tag_DTO = tag_ns.model('Tag', {
+    'id': fields.Integer(readOnly=True, description='The tag unique identifier'),
+    'name': fields.String(required=True, description='The tag name'),
+    'description': fields.String(required=False, description='The tag description')
+})
+
+@tag_ns.route("/")
+class TagList(Resource):
+    @tag_ns.doc('list_tags')
+    @tag_ns.marshal_list_with(tag_DTO)
+    def get(self):
+        """List all tags"""
+        #return Tag.query.all()
+        return "List all tags"
+
+#att
