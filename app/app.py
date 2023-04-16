@@ -5,14 +5,13 @@ from flask_restx.swagger import Swagger
 from flask_sqlalchemy import SQLAlchemy
 from controllers import tag_ns
 
-
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "storage.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-api = Api(app, version="1.0", title="Bio Tree API", description="A simple Bio Tree API")
+api = Api(app, version="1.0", title="Bio Tree API", description="A mini Bio Tree API")
 api.add_namespace(tag_ns, path="/tag")
 
 if __name__ == "__main__":
@@ -22,6 +21,4 @@ if __name__ == "__main__":
         db.create_all()
         db.session.commit()
     app.run(debug=True)
-
-#att
 

@@ -1,3 +1,3 @@
-
-def teste_service():
-    return print("Teste de service")
+from models import Tag
+def get_all_tags():
+    return Tag.query.all()
