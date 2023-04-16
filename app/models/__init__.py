@@ -1,1 +1,1 @@
-from .tag_model import *
+from .models import *

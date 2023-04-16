@@ -1,4 +1,5 @@
 from .tag_controller import *
+from .taxon_controller import *
 '''
 import sys
 import os

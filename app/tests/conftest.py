@@ -7,14 +7,14 @@ app = create_app("test")
 app.register_blueprint(blueprint)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def client():
     """Init Flask test client"""
     with app.test_client() as client, app.app_context():
         yield client
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def database(client, request):
     """Init database"""
     db.create_all()

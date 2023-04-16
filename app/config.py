@@ -3,22 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "storage.db")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-
-
-
-import os
-
 # uncomment the line below for postgres database url from environment variable
 # postgres_local_base = os.environ['DATABASE_URL']
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "my_precious_secret_key")
@@ -44,13 +32,11 @@ class Config:
     # The maximum file size for upload
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 megas
 
-
 class DevelopmentConfig(Config):
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
-    postgres_local_base = "postgresql+psycopg2://postgres:postgres@localhost/hospital"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "storage.db")
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = postgres_local_base
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ENV = "development"
     HOST = "localhost"
@@ -58,40 +44,18 @@ class DevelopmentConfig(Config):
     # uncomment the line below to see SQLALCHEMY queries
     # SQLALCHEMY_ECHO = True
 
-
-class StagingConfig(Config):
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = (
-        "postgresql+psycopg2://postgres:postgres@hospital-db/hospital"
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    ENV = "staging"
-    HOST = "0.0.0.0"
-
-
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(
-        basedir, "flask_boilerplate_test.db"
-    )
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "storage.db")
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ENV = "testing"
 
 
-class ProductionConfig(Config):
-    DEBUG = False
-    # uncomment the line below to use postgres
-    # SQLALCHEMY_DATABASE_URI = postgres_local_base
-    ENV = "production"
-
-
 config_by_name = dict(
     dev=DevelopmentConfig,
     test=TestingConfig,
-    prod=ProductionConfig,
-    staging=StagingConfig,
 )
 
 _env_name = os.environ.get("ENV_NAME")
