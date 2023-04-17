@@ -1,6 +1,6 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
-from models import TAXON_TYPES
+from models import TAXON_CLASS_TYPES
 from services.taxon_service import *
 from controllers.tag_controller import TagDto
 
@@ -8,11 +8,22 @@ from controllers.tag_controller import TagDto
 class TaxonDto:
     api = Namespace("taxon", description="taxon related operations")
 
-    taxon_post = api.model(
-        "taxon_create",
+    tags_ids = {
+        "tags_id": fields.List(
+            fields.Integer(required=True, description="tag id"),
+            required=False,
+            description="taxon tags id",
+        ),
+    }
+    tags = {
+        "tags": fields.List(fields.Nested(TagDto.tag_get)),
+    }
+
+    taxon_base = api.model(
+        "taxon_base",
         {
-            "taxon": fields.String(
-                required=True, description="taxon name", enum=TAXON_TYPES
+            "taxon_class": fields.String(
+                required=True, description="taxon name", enum=TAXON_CLASS_TYPES
             ),
             "name": fields.String(required=True, description="taxon name"),
             "popular_name": fields.String(
@@ -26,22 +37,22 @@ class TaxonDto:
             "individuals_number": fields.Integer(
                 required=False, description="taxon individuals number"
             ),
-            "tags_id" : fields.List(
-                fields.Integer(required=True, description="tag id"),
-                required=False,
-                description="tag ids",
+            "superior_taxon": fields.Integer(
+                required=False, description="taxon superior taxon id"
             ),
         },
     )
 
-    Tags = {
-        "tags": fields.List(fields.Nested(TagDto.tag_get)),
-    }
+    taxon_post = api.clone(
+        "taxon_post",
+        taxon_base,
+        tags_ids,
+    )
 
     taxon_get = api.clone(
         "taxon_get",
-        taxon_post,
-        Tags,
+        taxon_base,
+        tags,
         {"id": fields.Integer(required=True, description="taxon id")},
     )
 

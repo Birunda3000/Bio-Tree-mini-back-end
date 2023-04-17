@@ -34,25 +34,38 @@ tag_seeder_list = [
 
 taxon_seeder_list = [
     {
-        "taxon": "life",
+        "taxon_class": "life",
         "name": "Celular life",
         "popular_name": "Celular life",
         "description": "Celular life description",
         "origin": 3,
         "extinction": None,
         "individuals_number": 10000,
+        "superior_taxon": None,
         "tags": [1, 2, 3]
     },
     {
-        "taxon": "domain",
+        "taxon_class": "domain",
         "name": "Eukaryota",
         "popular_name": "Eukaryota",
         "description": "Eukaryota description",
         "origin": 1,
         "extinction": None,
         "individuals_number": 1000,
+        "superior_taxon": 1,
         "tags": [1, 2, 3]
-    }
+    },
+    {
+        "taxon_class": "kingdom",
+        "name": "Animalia",
+        "popular_name": "Animal",
+        "description": "Animal description",
+        "origin": 1,
+        "extinction": None,
+        "individuals_number": 100,
+        "superior_taxon": 2,
+        "tags": [1, 2]
+    },
 ]
 
 
