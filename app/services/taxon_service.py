@@ -20,6 +20,7 @@ def get_taxons(params: ImmutableMultiDict) -> dict[str, any]:
     extinction = params.get("extinction", type=int)
     superior_taxon_id = params.get("superior_taxon_id", type=int)
     tag_id = params.get("tag_id", type=int)
+    ancestor_id = params.get("ancestor_id", type=int)
     filters = []
     if taxon_class:
         filters.append(Taxon.taxon == taxon_class)
@@ -37,6 +38,8 @@ def get_taxons(params: ImmutableMultiDict) -> dict[str, any]:
         filters.append(Taxon.superior_taxon.id == superior_taxon_id)
     if tag_id:
         filters.append(Taxon.tags.any(id=tag_id))
+    if ancestor_id:
+        filters.append(Taxon.ancestors.any(id=ancestor_id))
 
     pagination = (
         Taxon.query.filter(*filters)
@@ -74,8 +77,13 @@ def save_new_taxon(data: dict[str, any]) -> dict[str, any]:
 
     tags = []
     if "tags" in data:
-        tag_ids = data["tags"]
+        tag_ids = data["tags_ids"]
         tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
+    
+    ancestors = []
+    if "ancestors" in data:
+        ancestor_ids = data["ancestors_ids"]
+        ancestors = Taxon.query.filter(Taxon.id.in_(ancestor_ids)).all()
 
     new_taxon = Taxon(
         taxon_class=data.get("taxon_class"),
@@ -87,6 +95,7 @@ def save_new_taxon(data: dict[str, any]) -> dict[str, any]:
         individuals_number=data.get("individuals_number"),
         superior_taxon=data.get("superior_taxon"),
         tags=tags,
+        ancestors=ancestors,
     )
     db.session.add(new_taxon)
     db.session.commit()
@@ -98,14 +107,15 @@ def update_taxon_by_id(taxon_id, data) -> dict[str, any]:
         taxon_class=data.get("taxon_class"),
         superior_taxon_id=data.get("superior_taxon"),
     )
-    taxon = Taxon.query.filter_by(id=taxon_id).first()
-    if taxon is None:
-        raise DefaultException(message="Taxon_does_not_exist", code=404)
+    taxon = get_taxon(taxon_id)
 
-    tags = []
     if "tags" in data:
-        tag_ids = data["tags"]
+        tag_ids = data["tags_ids"]
         tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
+    
+    if "ancestors" in data:
+        ancestor_ids = data["ancestors_ids"]
+        ancestors = Taxon.query.filter(Taxon.id.in_(ancestor_ids)).all()
 
     taxon.taxon_class = data.get("taxon_class")
     taxon.name = data.get("name")
@@ -115,6 +125,7 @@ def update_taxon_by_id(taxon_id, data) -> dict[str, any]:
     taxon.extinction = data.get("extinction")
     taxon.individuals_number = data.get("individuals_number")
     taxon.tags = tags
+    taxon.ancestors = ancestors
     db.session.commit()
     return response(status="success", message="Taxon_successfully_updated", code=200)
 
@@ -155,5 +166,6 @@ def verify_superior_taxon(taxon_class: str, superior_taxon_id: Taxon) -> bool:
 
 def verify_ancestor_taxon(taxon: Taxon, ancestors_taxons_id: list) -> bool:
     """Verify if an list of taxons can be ancestors of a taxon"""
+    
 
     
